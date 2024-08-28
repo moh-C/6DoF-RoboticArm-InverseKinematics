@@ -3,7 +3,7 @@ FROM tensorflow/tensorflow:2.10.1-gpu-jupyter
 WORKDIR /tf/workdir
 
 # Install additional packages
-RUN pip install --no-cache-dir mlflow seaborn pandas plotly
+RUN pip install --no-cache-dir mlflow seaborn pandas plotly tqdm
 
 # Expose port 8888 for Jupyter Notebook
 EXPOSE 8888
