@@ -5,10 +5,10 @@ import numpy as np
 # a: link length, alpha: link twist, d: link offset, theta: joint angle
 # Units: lengths in mm, angles in degrees
 dh_params = np.array([
-    [0, 90, 0.0, 0],
-    [50, 0, 0, 90],
-    [50, 0, 0, -90],
-    [0, 90, 10, -90],
     [0, -90, 10, 0],
-    [0, 0, 10, 0]
+    [50, 0, 0, -90],
+    [0, -90, 5, 0],
+    [0, 90, 50, 0],
+    [0, -90, 0, 0],
+    [0, 0, 10, 180]
 ])
