@@ -4,7 +4,7 @@ This repository contains Python utilities for performing forward kinematics calc
 
 ## Files
 
-### utils.py
+### [utils.py](utils.py)
 
 Contains utility functions for forward kinematics calculations:
 
@@ -13,7 +13,7 @@ Contains utility functions for forward kinematics calculations:
 - `dh_matrix_tf`: Calculates the DH transformation matrix using TensorFlow (batched version).
 - `forward_kinematics_TF`: Computes forward kinematics for a batch of joint angles using TensorFlow.
 
-### dh_params.py
+### [dh_params.py](dh_params.py)
 
 Defines the Denavit-Hartenberg parameters for a 6-joint robotic arm:
 
