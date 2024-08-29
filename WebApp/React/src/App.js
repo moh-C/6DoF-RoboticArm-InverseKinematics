@@ -1,45 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import DHParameters from './components/DHParameters';
+import React, { useState } from 'react';
+import LeftPanel from './components/LeftPanel';
+import RightPanel from './components/RightPanel';
+import TopNavigation from './components/TopNavigation';
 
-const API_BASE_URL = 'http://localhost:8000';
+const App = () => {
+  const [activeTab, setActiveTab] = useState('jointAngles');
+  const [activeView, setActiveView] = useState('default');
+  const [jointAngles, setJointAngles] = useState([0, 0, 0, 0, 0, 0]);
+  const [dhParams, setDhParams] = useState([
+    [0, 90, 0.0, 0],
+    [50, 0, 0, 90],
+    [50, 0, 0, -90],
+    [0, 90, 10, -90],
+    [0, -90, 10, 0],
+    [0, 0, 10, 0],
+  ]);
 
-function App() {
-  const [jointAngles, setJointAngles] = useState(null);
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/`)
-      .then(response => response.json())
-      .then(data => setMessage(data.message))
-      .catch(error => console.error('Error fetching message:', error));
-
-    fetch(`${API_BASE_URL}/api/joint_angles`)
-      .then(response => response.json())
-      .then(data => setJointAngles(data))
-      .catch(error => console.error('Error fetching joint angles:', error));
-  }, []);
+  const sendToBackend = async () => {
+    try {
+      const response = await fetch('/api/joint_angles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ joint_angles: jointAngles }),
+      });
+      const data = await response.json();
+      console.log('Backend response:', data);
+    } catch (error) {
+      console.error('Error sending joint angles to backend:', error);
+    }
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">{message}</h1>
-      {jointAngles ? (
-        <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-8">
-          <h2 className="text-2xl font-bold mb-4 text-gray-700">Joint Angles</h2>
-          <ul className="grid grid-cols-2 gap-4">
-            {Object.entries(jointAngles).map(([joint, angle]) => (
-              <li key={joint} className="bg-gray-100 rounded-lg p-4 flex justify-between items-center">
-                <span className="font-semibold text-gray-700">{joint}:</span>
-                <span className="text-blue-600">{angle} degrees</span>
-              </li>
-            ))}
-          </ul>
+    <div className="flex flex-col h-screen overflow-hidden">
+      <TopNavigation setActiveView={setActiveView} />
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-1/4 bg-gray-100 p-4 overflow-auto">
+          <LeftPanel
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            jointAngles={jointAngles}
+            setJointAngles={setJointAngles}
+            dhParams={dhParams}
+            setDhParams={setDhParams}
+            sendToBackend={sendToBackend}
+          />
         </div>
-      ) : (
-        <p className="text-center text-gray-600">Loading joint angles...</p>
-      )}
-      <DHParameters />
+        <div className="w-3/4 bg-white p-4">
+          <RightPanel
+            activeView={activeView}
+            jointAngles={jointAngles}
+            dhParams={dhParams}
+          />
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
