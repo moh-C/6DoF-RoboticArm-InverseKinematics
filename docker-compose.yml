@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./WebApp/React
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./WebApp/React:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+
+  backend:
+    build: 
+      context: ./WebApp/FastAPI
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./WebApp/FastAPI:/app
+
+  tensorflow:
+    build: 
+      context: ./TensorFlow
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./TensorFlow:/tf/workdir
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  node_modules:
