@@ -21,15 +21,16 @@ services:
       - "8000:8000"
     volumes:
       - ./WebApp/FastAPI:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   tensorflow:
     build: 
-      context: ./TensorFlow
+      context: .
       dockerfile: Dockerfile
     ports:
-      - "8888:8888"
+      - "8989:8989"
     volumes:
-      - ./TensorFlow:/tf/workdir
+      - .:/tf/workdir
     deploy:
       resources:
         reservations:

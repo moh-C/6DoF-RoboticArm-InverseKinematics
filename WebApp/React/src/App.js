@@ -1,67 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import LeftPanel from './components/LeftPanel';
-import RightPanel from './components/RightPanel';
-import * as math from 'mathjs';
-import Plotly from 'plotly.js-gl3d-dist';
+
+const API_BASE_URL = 'http://localhost:8000'; // FastAPI backend URL
 
 function App() {
-  const [jointAngles, setJointAngles] = useState([0, 0, 0, 0, 0, 0]);
-  const [dhParams, setDhParams] = useState([
-    [0, 90, 0.0, 0],
-    [50, 0, 0, 90],
-    [50, 0, 0, -90],
-    [0, 90, 10, -90],
-    [0, -90, 10, 0],
-    [0, 0, 10, 0],
-  ]);
-  const [endEffectorPosition, setEndEffectorPosition] = useState({ x: 0, y: 0, z: 0, roll: 0, pitch: 0, yaw: 0 });
+  const [jointAngles, setJointAngles] = useState(null);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    updateSimulation();
-  }, [jointAngles, dhParams]);
+    // Fetch welcome message
+    fetch(`${API_BASE_URL}/`)
+      .then(response => response.json())
+      .then(data => setMessage(data.message))
+      .catch(error => console.error('Error fetching message:', error));
 
-  function dh_matrix(a, alpha, d, theta) {
-    // ... (same as before)
-  }
-
-  function forward_kinematics(thetas, dh_params) {
-    // ... (same as before)
-  }
-
-  function updateSimulation() {
-    // ... (similar to before, but update state instead of DOM)
-    const result = forward_kinematics(jointAngles, dhParams);
-    const positions = result.positions;
-    const T = result.T;
-
-    // Calculate end-effector position and orientation
-    const end_pos = math.subset(T, math.index([0, 1, 2], 3)).toArray().map(Number);
-    // ... (calculate roll, pitch, yaw)
-
-    setEndEffectorPosition({
-      x: end_pos[0],
-      y: end_pos[1],
-      z: end_pos[2],
-      roll: roll * 180 / Math.PI,
-      pitch: pitch * 180 / Math.PI,
-      yaw: yaw * 180 / Math.PI,
-    });
-
-    // Update plot
-    const traces = []; // ... (create traces similar to before)
-    Plotly.react("plotDiv", traces, layout);
-  }
+    // Fetch joint angles
+    fetch(`${API_BASE_URL}/api/joint_angles`)
+      .then(response => response.json())
+      .then(data => setJointAngles(data))
+      .catch(error => console.error('Error fetching joint angles:', error));
+  }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <LeftPanel
-        jointAngles={jointAngles}
-        setJointAngles={setJointAngles}
-        dhParams={dhParams}
-        setDhParams={setDhParams}
-        endEffectorPosition={endEffectorPosition}
-      />
-      <RightPanel />
+    <div className="App">
+      <h1>Robot Arm Simulation</h1>
+      <p>{message}</p>
+      {jointAngles ? (
+        <div>
+          <h2>Joint Angles:</h2>
+          <ul>
+            {Object.entries(jointAngles).map(([joint, angle]) => (
+              <li key={joint}>{joint}: {angle} degrees</li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p>Loading joint angles...</p>
+      )}
     </div>
   );
 }
