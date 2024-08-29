@@ -1,24 +1,31 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
+import sys
+import os
+
+# Add the parent directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from utils.dh_params import dh_params, update_dh_params
 
 app = FastAPI()
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allow the React app to access the API
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+class DHParams(BaseModel):
+    dh_params: List[List[float]]
+
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Robot Arm Simulation API"}
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
 
 @app.get("/api/joint_angles")
 async def get_joint_angles():
@@ -28,9 +35,21 @@ async def get_joint_angles():
         "joint2": 45,
         "joint3": -30,
         "joint4": 0,
-        "joint5": 80,
-        "joint6": 11
+        "joint5": 0,
+        "joint6": 0
     }
+
+@app.get("/api/dh_parameters")
+async def get_dh_parameters():
+    return {"dh_params": dh_params}
+
+@app.post("/api/dh_parameters")
+async def update_dh_parameters(params: DHParams):
+    try:
+        update_dh_params(params.dh_params)
+        return {"message": "DH parameters updated successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

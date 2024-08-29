@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8989:8989"
+      - "8888:8888"
     volumes:
       - .:/tf/workdir
     deploy:

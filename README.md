@@ -10,3 +10,8 @@ Now I am making a WebApp for this:
 1. Dockerfile for the frontend and the backend
 2. FASTAPI for backend and React for FrontEnd
 3. Dockercompose for everything!
+4. run `docker compose up` and we are in biz
+
+React on port 3000
+FASTAPI on port 8000
+Jupyter on port 88
