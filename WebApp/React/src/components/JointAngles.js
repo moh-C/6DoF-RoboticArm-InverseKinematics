@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiRotateCcw, FiSend, FiDownload  } from 'react-icons/fi';
 
 const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
+  const [isPolling, setIsPolling] = useState(true);
+  const prevAnglesRef = useRef(jointAngles);
+
   const handleChange = (index, value) => {
     const newAngles = [...jointAngles];
     newAngles[index] = Number(value);
@@ -27,12 +30,33 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
         data.joint5,
         data.joint6
       ];
-      setJointAngles(angles);
+      
+      // Check if angles have changed
+      if (JSON.stringify(angles) !== JSON.stringify(prevAnglesRef.current)) {
+        setJointAngles(angles);
+        prevAnglesRef.current = angles;
+      }
     } catch (error) {
       console.error('Error fetching joint angles:', error);
-      // User-facing error handling
-      alert('Failed to fetch joint angles. Please try again.');
+      setIsPolling(false);
+      alert('Failed to fetch joint angles. Polling has been stopped.');
     }
+  };
+
+  useEffect(() => {
+    let intervalId;
+    if (isPolling) {
+      intervalId = setInterval(fetchAngles, 1000); // Poll every second
+    }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isPolling]);
+
+  const togglePolling = () => {
+    setIsPolling(!isPolling);
   };
 
   const getColor = (angle) => {
@@ -71,7 +95,7 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
 
     return `rgb(${r}, ${g}, ${b})`;
   };
-
+  
   return (
     <div className="bg-gray-100 p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Joint Angles</h2>
@@ -103,7 +127,7 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
             </div>
             <div className="w-1/6 flex justify-center">
               <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center text-black font-bold text-xs"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xs"
                 style={{ backgroundColor: getColor(angle) }}
               >
                 {angle}°
@@ -112,7 +136,7 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
           </div>
         ))}
       </div>
-      <div className="mt-6 flex justify-between">
+      <div className="mt-6 flex justify-between items-center">
         <button
           onClick={resetAngles}
           className="flex items-center px-3 py-1 bg-gray-500 text-white text-sm rounded-md hover:bg-gray-600 transition duration-300"
@@ -121,11 +145,13 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
           Reset
         </button>
         <button
-          onClick={fetchAngles}
-          className="flex items-center px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition duration-300"
+          onClick={togglePolling}
+          className={`flex items-center px-3 py-1 text-white text-sm rounded-md transition duration-300 ${
+            isPolling ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+          }`}
         >
           <FiDownload className="mr-1" />
-          Fetch
+          {isPolling ? 'Stop Auto-update' : 'Start Auto-update'}
         </button>
         <button
           onClick={sendToBackend}
