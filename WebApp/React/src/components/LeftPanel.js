@@ -10,13 +10,24 @@ const LeftPanel = ({
   setJointAngles,
   dhParams,
   setDhParams,
-  sendToBackend,
+  sendToBackend
 }) => {
+
   const tabs = [
     { id: 'jointAngles', label: 'Joint Angles' },
     { id: 'dhParameters', label: 'DH Parameters' },
     { id: 'move', label: 'Move' },
   ];
+
+  const handleJointAngleChange = (index, value) => {
+    const newJointAngles = [...jointAngles];
+    newJointAngles[index] = Number(value);
+    setJointAngles(newJointAngles);
+  };
+
+  const handleSendToBackend = () => {
+    sendToBackend(jointAngles);
+  };
 
   return (
     <div>
@@ -24,9 +35,8 @@ const LeftPanel = ({
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`mr-2 px-3 py-2 rounded ${
-              activeTab === tab.id ? 'bg-blue-500 text-white' : 'bg-gray-200'
-            }`}
+            className={`mr-2 px-3 py-2 rounded ${activeTab === tab.id ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              }`}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}

@@ -2,35 +2,18 @@ import React, { useState } from 'react';
 import LeftPanel from './components/LeftPanel';
 import RightPanel from './components/RightPanel';
 import TopNavigation from './components/TopNavigation';
+import useRobotData from './hooks/useRobotData';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('jointAngles');
   const [activeView, setActiveView] = useState('default');
-  const [jointAngles, setJointAngles] = useState([0, 0, 0, 0, 0, 0]);
-  const [dhParams, setDhParams] = useState([
-    [0, 90, 0.0, 0],
-    [50, 0, 0, 90],
-    [50, 0, 0, -90],
-    [0, 90, 10, -90],
-    [0, -90, 10, 0],
-    [0, 0, 10, 0],
-  ]);
-
-  const sendToBackend = async () => {
-    try {
-      const response = await fetch('/api/joint_angles', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ joint_angles: jointAngles }),
-      });
-      const data = await response.json();
-      console.log('Backend response:', data);
-    } catch (error) {
-      console.error('Error sending joint angles to backend:', error);
-    }
-  };
+  const {
+    jointAngles,
+    setJointAngles,
+    dhParams,
+    setDhParams,
+    sendToBackend
+  } = useRobotData();
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
