@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from typing import List
 import sys
 import os
-
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -32,8 +31,8 @@ async def get_joint_angles():
     # Placeholder data
     return {
         "joint1": 0,
-        "joint2": 45,
-        "joint3": -30,
+        "joint2": 0,
+        "joint3": 0,
         "joint4": 0,
         "joint5": 0,
         "joint6": 0
@@ -41,7 +40,9 @@ async def get_joint_angles():
 
 @app.get("/api/dh_parameters")
 async def get_dh_parameters():
-    return {"dh_params": dh_params}
+    return {
+        "dh_params": dh_params
+    }
 
 @app.post("/api/dh_parameters")
 async def update_dh_parameters(params: DHParams):

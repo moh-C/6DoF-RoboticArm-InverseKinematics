@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiRotateCcw, FiSend, FiDownload  } from 'react-icons/fi';
+import { FiRotateCcw, FiSend, FiDownload } from 'react-icons/fi';
 
 const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
   const [isPolling, setIsPolling] = useState(true);
@@ -30,7 +30,7 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
         data.joint5,
         data.joint6
       ];
-      
+
       // Check if angles have changed
       if (JSON.stringify(angles) !== JSON.stringify(prevAnglesRef.current)) {
         setJointAngles(angles);
@@ -62,7 +62,7 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
   const getColor = (angle) => {
     // Normalize the angle to a 0-1 range
     const normalizedAngle = (angle + 180) / 360;
-    
+
     // Define color stops
     const colors = [
       { pos: 0, r: 41, g: 121, b: 255 },  // Blue
@@ -95,7 +95,7 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
 
     return `rgb(${r}, ${g}, ${b})`;
   };
-  
+
   return (
     <div className="bg-gray-100 p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Joint Angles</h2>
@@ -126,8 +126,8 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
               </div>
             </div>
             <div className="w-1/6 flex justify-center">
-              <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xs"
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-black font-bold text-xs"
                 style={{ backgroundColor: getColor(angle) }}
               >
                 {angle}°
@@ -146,9 +146,8 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
         </button>
         <button
           onClick={togglePolling}
-          className={`flex items-center px-3 py-1 text-white text-sm rounded-md transition duration-300 ${
-            isPolling ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
-          }`}
+          className={`flex items-center px-3 py-1 text-white text-sm rounded-md transition duration-300 ${isPolling ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+            }`}
         >
           <FiDownload className="mr-1" />
           {isPolling ? 'Stop Auto-update' : 'Start Auto-update'}

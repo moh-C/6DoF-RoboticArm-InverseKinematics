@@ -19,15 +19,15 @@ const LeftPanel = ({
     { id: 'move', label: 'Move' },
   ];
 
-  const handleJointAngleChange = (index, value) => {
-    const newJointAngles = [...jointAngles];
-    newJointAngles[index] = Number(value);
-    setJointAngles(newJointAngles);
-  };
+  // const handleJointAngleChange = (index, value) => {
+  //   const newJointAngles = [...jointAngles];
+  //   newJointAngles[index] = Number(value);
+  //   setJointAngles(newJointAngles);
+  // };
 
-  const handleSendToBackend = () => {
-    sendToBackend(jointAngles);
-  };
+  // const handleSendToBackend = () => {
+  //   sendToBackend(jointAngles);
+  // };
 
   return (
     <div>

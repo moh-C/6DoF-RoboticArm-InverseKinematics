@@ -10,16 +10,40 @@ function DHParameters() {
     fetchDHParams();
   }, []);
 
-  const fetchDHParams = () => {
-    fetch(`${API_BASE_URL}/api/dh_parameters`)
-      .then(response => response.json())
-      .then(data => setDhParams(data.dh_params))
-      .catch(error => console.error('Error fetching DH parameters:', error));
+  const fetchDHParams = async () => {
+    try {
+      // const response = await fetch(`${API_BASE_URL}/api/dh_parameters`);
+      const response = await fetch('http://localhost:8000/api/dh_parameters', {
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      const text = await response.text();
+      console.log('Response text:', text);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      try {
+        const data = JSON.parse(text);
+        setDhParams(data.dh_params);
+      } catch (e) {
+        console.error('Error parsing JSON:', e);
+        throw new Error('Invalid JSON response');
+      }
+    } catch (error) {
+      console.error('Error fetching DH parameters:', error);
+      // Optionally set some default DH parameters or show an error message to the user
+    }
   };
 
   const handleInputChange = (jointIndex, paramIndex, value) => {
-    const newParams = dhParams.map((joint, jIndex) => 
-      jIndex === jointIndex 
+    const newParams = dhParams.map((joint, jIndex) =>
+      jIndex === jointIndex
         ? joint.map((param, pIndex) => pIndex === paramIndex ? parseFloat(value) : param)
         : joint
     );
@@ -34,23 +58,23 @@ function DHParameters() {
       },
       body: JSON.stringify({ dh_params: dhParams }),
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Success:', data);
-      setEditMode(false);
-      fetchDHParams();
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+      .then(response => response.json())
+      .then(data => {
+        // console.log('Success:', data);
+        setEditMode(false);
+        fetchDHParams();
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="px-6 py-4 bg-gray-100 border-b flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">DH Parameters</h2>
-        <button 
-          onClick={() => setEditMode(!editMode)} 
+        <button
+          onClick={() => setEditMode(!editMode)}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
         >
           {editMode ? 'Cancel' : 'Edit'}
@@ -75,9 +99,9 @@ function DHParameters() {
                   {param.map((value, paramIndex) => (
                     <td key={paramIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {editMode ? (
-                        <input 
-                          type="number" 
-                          value={value} 
+                        <input
+                          type="number"
+                          value={value}
                           onChange={(e) => handleInputChange(jointIndex, paramIndex, e.target.value)}
                           className="w-full p-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -93,8 +117,8 @@ function DHParameters() {
         </div>
         {editMode && (
           <div className="mt-4 flex justify-end">
-            <button 
-              onClick={handleSubmit} 
+            <button
+              onClick={handleSubmit}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
             >
               Save Changes
