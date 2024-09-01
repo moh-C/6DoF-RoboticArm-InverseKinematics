@@ -47,6 +47,7 @@ class RobotArm:
         This method sets the initial pose of the robot using zero joint angles.
         """
         self.set_pose(self.joint_angles)
+        self.initialize_pose()
 
     def set_dh_params(self, dh_params: List[List[float]]) -> None:
         """

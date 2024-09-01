@@ -61,6 +61,7 @@ class RobotArm:
         if not isinstance(dh_params, list) or len(dh_params) != 6 or not all(len(joint) == 4 for joint in dh_params):
             raise ValueError("dh_params must be a list of 6 joints, each with 4 parameters")
         self.dh_params = dh_params
+        self.initialize_pose()
     
     def get_dh_params(self) -> Dict[str, Dict[str, float]]:
         """
