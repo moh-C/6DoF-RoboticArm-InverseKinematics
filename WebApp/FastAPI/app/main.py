@@ -1,56 +1,53 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
-import sys
-import os
-# Add the parent directory to sys.path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from utils.dh_params import dh_params, update_dh_params
+from spatialmath import SE3
+from app.RobotArm import RobotArm
+from app.DH import dh_params
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+class JointAngles(BaseModel):
+    angles: List[float]
 
-class DHParams(BaseModel):
-    dh_params: List[List[float]]
+class DHParameters(BaseModel):
+    params: List[List[float]]
 
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the Robot Arm Simulation API"}
+robotic_arm = RobotArm(dh_params)
 
-@app.get("/api/joint_angles")
-async def get_joint_angles():
-    # Placeholder data
+@app.get("/joint_angles")
+def get_joint_angles():
+    return {"joint_angles": robotic_arm.joint_angles.tolist()}
+
+@app.post("/joint_angles")
+def set_joint_angles(joint_angles: JointAngles):
+    if len(joint_angles.angles) != 6:
+        raise HTTPException(status_code=400, detail="Must provide 6 joint angles")
+    x, y, z, roll, pitch, yaw = robotic_arm.set_pose(joint_angles.angles)
     return {
-        "joint1": 0,
-        "joint2": 0,
-        "joint3": 0,
-        "joint4": 0,
-        "joint5": 0,
-        "joint6": 0
+        "end_effector_position": {"x": x, "y": y, "z": z},
+        "end_effector_orientation": {"roll": roll, "pitch": pitch, "yaw": yaw},
+        "joint_positions": robotic_arm.joint_positions.tolist()
     }
 
-@app.get("/api/dh_parameters")
-async def get_dh_parameters():
-    return {
-        "dh_params": dh_params
-    }
+@app.get("/dh_parameters")
+def get_dh_parameters():
+    return robotic_arm.get_dh_params()
 
-@app.post("/api/dh_parameters")
-async def update_dh_parameters(params: DHParams):
-    try:
-        update_dh_params(params.dh_params)
-        return {"message": "DH parameters updated successfully"}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+@app.post("/dh_parameters")
+def set_dh_parameters(dh_params: DHParameters):
+    if len(dh_params.params) != 6 or any(len(param) != 4 for param in dh_params.params):
+        raise HTTPException(status_code=400, detail="Must provide 6 sets of 4 DH parameters each")
+    robotic_arm.set_dh_params(dh_params.params)
+    return {"message": "DH parameters updated successfully"}
+
+@app.get("/joint_positions")
+def get_joint_positions():
+    return {"joint_positions": robotic_arm.joint_positions.tolist()}
+
+@app.get("/get_pose")
+def get_joint_positions():
+    return {"pose": robotic_arm.get_pose()}
 
 if __name__ == "__main__":
     import uvicorn

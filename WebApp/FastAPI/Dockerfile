@@ -6,7 +6,9 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Update this line to include uvicorn
-RUN pip install --no-cache-dir -r requirements.txt uvicorn
+RUN pip install --no-cache-dir -r requirements.txt uvicorn 
+RUN pip install --upgrade pip 
+RUN pip install --upgrade pip numpy spatialmath-python
 
 COPY . .
 
