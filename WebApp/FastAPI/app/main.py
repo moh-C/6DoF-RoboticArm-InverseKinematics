@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, conlist, confloat
 from typing import List, Dict
 import numpy as np
@@ -8,6 +9,15 @@ import logging
 from functools import lru_cache
 
 app = FastAPI(title="RobotArm API", version="1.0.0")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Allows the React app to access the API
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
