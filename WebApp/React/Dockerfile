@@ -7,7 +7,7 @@ COPY package*.json ./
 
 RUN npm install
 RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object 
-RUN npm install mathjs plotly.js-gl3d-dist react-icons
+RUN npm install mathjs plotly.js-gl3d-dist react-icons axios
 
 COPY . .
 

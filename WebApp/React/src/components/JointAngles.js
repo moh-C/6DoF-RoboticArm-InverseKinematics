@@ -1,41 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiRotateCcw, FiSend, FiDownload } from 'react-icons/fi';
+import { getJointAngles, setJointAngles } from '../api/apiInterface';
 
-const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
+const JointAngles = ({ setJointAngles: updateParentJointAngles }) => {
+  const [jointAngles, setLocalJointAngles] = useState([0, 0, 0, 0, 0, 0]);
   const [isPolling, setIsPolling] = useState(true);
-  const prevAnglesRef = useRef(jointAngles);
 
   const handleChange = (index, value) => {
     const newAngles = [...jointAngles];
     newAngles[index] = Number(value);
-    setJointAngles(newAngles);
+    setLocalJointAngles(newAngles);
+    updateParentJointAngles(newAngles);
   };
 
   const resetAngles = () => {
-    setJointAngles([0, 0, 0, 0, 0, 0]);
+    const resetAngles = [0, 0, 0, 0, 0, 0];
+    setLocalJointAngles(resetAngles);
+    updateParentJointAngles(resetAngles);
   };
 
   const fetchAngles = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/joint_angles');
-      if (!response.ok) {
-        throw new Error('Failed to fetch joint angles');
-      }
-      const data = await response.json();
-      const angles = [
-        data.joint1,
-        data.joint2,
-        data.joint3,
-        data.joint4,
-        data.joint5,
-        data.joint6
-      ];
-
-      // Check if angles have changed
-      if (JSON.stringify(angles) !== JSON.stringify(prevAnglesRef.current)) {
-        setJointAngles(angles);
-        prevAnglesRef.current = angles;
-      }
+      const data = await getJointAngles();
+      setLocalJointAngles(data.joint_angles);
+      updateParentJointAngles(data.joint_angles);
     } catch (error) {
       console.error('Error fetching joint angles:', error);
       setIsPolling(false);
@@ -57,6 +45,15 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
 
   const togglePolling = () => {
     setIsPolling(!isPolling);
+  };
+
+  const sendToBackend = async () => {
+    try {
+      await setJointAngles(jointAngles);
+      alert('Joint angles sent successfully!');
+    } catch (error) {
+      alert('Failed to send joint angles. Please try again.');
+    }
   };
 
   const getColor = (angle) => {
@@ -109,19 +106,19 @@ const JointAngles = ({ jointAngles, setJointAngles, sendToBackend }) => {
               <div className="relative">
                 <input
                   type="range"
-                  min="-120"
-                  max="120"
+                  min="-180"
+                  max="180"
                   value={angle}
                   onChange={(e) => handleChange(index, e.target.value)}
                   className="w-full h-1 bg-transparent rounded-md appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, ${getColor(-120)}, ${getColor(-60)}, ${getColor(0)}, ${getColor(60)}, ${getColor(120)})`,
+                    background: `linear-gradient(to right, ${getColor(-180)}, ${getColor(-90)}, ${getColor(0)}, ${getColor(90)}, ${getColor(180)})`,
                   }}
                 />
                 <div className="absolute -bottom-4 left-0 w-full flex justify-between text-xs text-gray-500">
-                  <span>-120°</span>
+                  <span>-180°</span>
                   <span>0°</span>
-                  <span>120°</span>
+                  <span>180°</span>
                 </div>
               </div>
             </div>
