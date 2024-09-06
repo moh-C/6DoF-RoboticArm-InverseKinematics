@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import LeftPanel from './components/LeftPanel';
+import LeftPanel from './components/LeftPanel/LeftPanel';
 import RightPanel from './components/RightPanel';
 import TopNavigation from './components/TopNavigation';
 import useRobotData from './hooks/useRobotData';

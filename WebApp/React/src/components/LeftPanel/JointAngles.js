@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiRotateCcw, FiSend, FiDownload } from 'react-icons/fi';
-import { getJointAngles, setJointAngles } from '../api/apiInterface';
+import { getJointAngles, setJointAngles } from '../../api/apiInterface';
 
 const JointAngles = ({ setJointAngles: updateParentJointAngles }) => {
   const [jointAngles, setLocalJointAngles] = useState([0, 0, 0, 0, 0, 0]);

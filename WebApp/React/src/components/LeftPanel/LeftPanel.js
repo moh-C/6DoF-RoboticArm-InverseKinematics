@@ -1,7 +1,7 @@
 import React from 'react';
 import JointAngles from './JointAngles';
-import DHParameters from './DHParameters';
-import Move from './Move';
+import DHParameters from '../DHParameters';
+import Move from '../Move';
 
 const LeftPanel = ({
   activeTab,
@@ -19,15 +19,15 @@ const LeftPanel = ({
     { id: 'move', label: 'Move' },
   ];
 
-  // const handleJointAngleChange = (index, value) => {
-  //   const newJointAngles = [...jointAngles];
-  //   newJointAngles[index] = Number(value);
-  //   setJointAngles(newJointAngles);
-  // };
+  const handleJointAngleChange = (index, value) => {
+    const newJointAngles = [...jointAngles];
+    newJointAngles[index] = Number(value);
+    setJointAngles(newJointAngles);
+  };
 
-  // const handleSendToBackend = () => {
-  //   sendToBackend(jointAngles);
-  // };
+  const handleSendToBackend = () => {
+    sendToBackend(jointAngles);
+  };
 
   return (
     <div>
