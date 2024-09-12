@@ -73,7 +73,6 @@ const useRobotData = () => {
       });
       if (!response.ok) throw new Error('Failed to update joint angles');
       const data = await response.json();
-      // console.log('Backend response:', data);
       setJointAngles(newJointAngles);
     } catch (error) {
       console.error('Error sending joint angles to backend:', error);

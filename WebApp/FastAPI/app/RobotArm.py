@@ -129,7 +129,7 @@ class RobotArm:
             theta = theta_home + joint_angles_rad[i]
             self.T *= self.dh_transform(theta, d, a, alpha)
             self.joint_positions[i, :] = self.T.t
-
+        
         return self.extract_pose()
 
     def get_pose(self) -> Dict[str, float]:

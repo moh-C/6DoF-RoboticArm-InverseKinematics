@@ -50,7 +50,6 @@ const JointAngles = ({ setJointAngles: updateParentJointAngles }) => {
   const sendToBackend = async () => {
     try {
       await setJointAngles(jointAngles);
-      alert('Joint angles sent successfully!');
     } catch (error) {
       alert('Failed to send joint angles. Please try again.');
     }
